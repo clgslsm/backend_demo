@@ -5,7 +5,7 @@ import { User } from '../entities/user.entity';
 import { Match } from 'src/entities/match.entity';
 import { ConfigService } from '@nestjs/config';
 import { EmailService } from '../email/email.service';
-
+import { UsersService } from '../users/users.service';
 @Injectable()
 export class UserInteractService {
   private mg: any;
@@ -16,9 +16,13 @@ export class UserInteractService {
     private readonly matchRepository: Repository<Match>,
     private readonly configService: ConfigService,
     private readonly emailService: EmailService,
+    private readonly usersService: UsersService,
   ) {}
 
-  async handleLike(userId: number, likedUserId: number): Promise<void> {
+  async handleLike(
+    userId: number,
+    likedUserId: number,
+  ): Promise<{ message: string }> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
       relations: ['likes'],
@@ -39,6 +43,9 @@ export class UserInteractService {
       throw new BadRequestException('User already liked');
     }
 
+    user.likes.push(likedUser);
+    await this.userRepository.save(user);
+
     const isMatch = likedUser.likes.some((liked) => liked.id === userId);
     if (isMatch) {
       const match = await this.insertMatch(user, likedUser);
@@ -48,10 +55,11 @@ export class UserInteractService {
         likedUser.email,
         match.createdAt,
       );
+
+      return { message: "It's a match! Both users have liked each other." };
     }
 
-    user.likes.push(likedUser);
-    await this.userRepository.save(user);
+    return { message: 'User liked successfully.' };
   }
 
   private async sendMatchNotification(

@@ -12,9 +12,6 @@ export class Match {
   @ManyToOne(() => User)
   user2: User;
 
-  @Column({ default: false })
-  isMatched: boolean;
-
   @Column({ nullable: true })
   chatId?: string;
 

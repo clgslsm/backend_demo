@@ -33,14 +33,18 @@ export class UsersService {
   }
 
   async findOne(id: number): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+        deletedAt: null,
+      },
+    });
     if (!user) throw new NotFoundException('User not found');
     return user;
   }
-  // Get details of user when admin or user himself
+
   async getUserDetails(id: number, currentUser: User): Promise<User> {
     const user = await this.findOne(id);
-    if (!user) throw new NotFoundException('User not found');
     if (user.id !== currentUser.id && currentUser.role !== Role.ADMIN) {
       throw new ForbiddenException('Access to this resource is forbidden');
     }
@@ -71,8 +75,7 @@ export class UsersService {
     updates: UpdateUserDto,
     currentUser: User,
   ): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.findOne(id);
 
     if (user.id !== currentUser.id && currentUser.role !== Role.ADMIN) {
       throw new ForbiddenException('Access to this resource is forbidden');
@@ -96,8 +99,7 @@ export class UsersService {
     file: Express.Multer.File,
     currentUser: User,
   ): Promise<User> {
-    const user = await this.userRepository.findOne({ where: { id } });
-    if (!user) throw new NotFoundException('User not found');
+    const user = await this.findOne(id);
 
     if (user.id !== currentUser.id && currentUser.role !== Role.ADMIN) {
       throw new ForbiddenException('Access to this resource is forbidden');
@@ -131,6 +133,8 @@ export class UsersService {
   }
 
   async findByUsername(username: string) {
-    return this.userRepository.findOne({ where: { username } });
+    return this.userRepository.findOne({
+      where: { username, deletedAt: null },
+    });
   }
 }

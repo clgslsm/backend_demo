@@ -7,6 +7,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Roles } from 'src/auth/roles.decorator';
+import { Role } from 'src/shared/roles.enum';
 
 @ApiTags('user-interact')
 @Controller('user-interact')
@@ -14,6 +16,7 @@ export class UserInteractController {
   constructor(private readonly userInteractService: UserInteractService) {}
 
   @UseGuards(JwtAuthGuard)
+  @Roles(Role.USER)
   @Post('like/:likedUserId')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Like a user' })
@@ -22,8 +25,8 @@ export class UserInteractController {
   async likeUser(
     @Param('likedUserId') likedUserId: number,
     @Request() req,
-  ): Promise<void> {
+  ): Promise<{ message: string }> {
     const userId = req.user.id;
-    await this.userInteractService.handleLike(userId, likedUserId);
+    return this.userInteractService.handleLike(userId, likedUserId);
   }
 }

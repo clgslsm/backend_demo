@@ -47,6 +47,7 @@ export class UsersController {
   // Get details of user when admin or user himself
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER)
+  @ApiBearerAuth()
   @Get('details/:id')
   getUserDetails(@Param('id') id: number, @Request() req) {
     return this.usersService.getUserDetails(id, req.user);
@@ -54,6 +55,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER)
+  @ApiBearerAuth()
   @Put('details/:id')
   updateUserDetails(
     @Param('id') id: number,
@@ -113,6 +115,7 @@ export class UsersController {
 
   @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles(Role.ADMIN, Role.USER)
+  @ApiBearerAuth()
   @Delete(':id')
   deleteUser(@Param('id') id: number, @Request() req) {
     return this.usersService.deleteUser(id, req.user);

@@ -5,8 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Match } from 'src/entities/match.entity';
 import { EmailModule } from 'src/email/email.module';
+import { UsersModule } from 'src/users/users.module';
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Match]), EmailModule],
+  imports: [TypeOrmModule.forFeature([User, Match]), EmailModule, UsersModule],
   providers: [UserInteractService],
   controllers: [UserInteractController],
 })
