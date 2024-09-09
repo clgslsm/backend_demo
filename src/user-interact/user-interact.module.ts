@@ -1,0 +1,13 @@
+import { Module } from '@nestjs/common';
+import { UserInteractService } from './user-interact.service';
+import { UserInteractController } from './user-interact.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from 'src/entities/user.entity';
+import { Match } from 'src/entities/match.entity';
+import { EmailModule } from 'src/email/email.module';
+@Module({
+  imports: [TypeOrmModule.forFeature([User, Match]), EmailModule],
+  providers: [UserInteractService],
+  controllers: [UserInteractController],
+})
+export class UserInteractModule {}

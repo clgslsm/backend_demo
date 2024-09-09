@@ -1,13 +1,14 @@
-// src/users/user.entity.ts
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne } from 'typeorm';
-import { Detail } from '../entities/detail.entity';
+import { Role } from 'src/shared/roles.enum';
+import {
+  Column,
+  DeleteDateColumn,
+  Entity,
+  JoinTable,
+  ManyToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
-export enum Role {
-  ADMIN = 'admin',
-  USER = 'user',
-}
-
-@Entity()
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
@@ -18,13 +19,26 @@ export class User {
   @Column()
   password: string;
 
-  @Column({
-    type: 'enum',
-    enum: Role,
-    default: Role.USER,
-  })
+  @Column({ nullable: true })
+  nickname: string;
+
+  @Column({ type: 'int', nullable: true })
+  age: number;
+
+  @Column({ nullable: true })
+  avatar: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
-  @OneToOne(() => Detail, (detail) => detail.user)
-  detail: Detail;
+  @Column({ nullable: true })
+  email: string;
+
+  @DeleteDateColumn()
+  deletedAt?: Date;
+
+  // Use ManyToMany relationship with likes
+  @ManyToMany(() => User)
+  @JoinTable()
+  likes: User[];
 }
