@@ -6,8 +6,13 @@ import { User } from 'src/entities/user.entity';
 import { Match } from 'src/entities/match.entity';
 import { EmailModule } from 'src/email/email.module';
 import { UsersModule } from 'src/users/users.module';
+import { Like } from 'src/entities/like.entity';
 @Module({
-  imports: [TypeOrmModule.forFeature([User, Match]), EmailModule, UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([User, Match, Like]),
+    EmailModule,
+    UsersModule,
+  ],
   providers: [UserInteractService],
   controllers: [UserInteractController],
 })

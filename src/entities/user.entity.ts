@@ -3,10 +3,10 @@ import {
   Column,
   DeleteDateColumn,
   Entity,
-  JoinTable,
-  ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
+import { Like } from './like.entity';
 
 @Entity('users')
 export class User {
@@ -34,11 +34,12 @@ export class User {
   @Column({ nullable: true })
   email: string;
 
+  @OneToMany(() => Like, (like) => like.user)
+  givenLikes: Like[];
+
+  @OneToMany(() => Like, (like) => like.likedUser)
+  receivedLikes: Like[];
+
   @DeleteDateColumn()
   deletedAt?: Date;
-
-  // Use ManyToMany relationship with likes
-  @ManyToMany(() => User)
-  @JoinTable()
-  likes: User[];
 }

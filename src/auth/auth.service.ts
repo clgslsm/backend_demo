@@ -8,7 +8,7 @@ import { Role } from 'src/shared/roles.enum';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from 'src/entities/user.entity';
-
+import { JwtPayload } from './strategies/jwt.strategy';
 @Injectable()
 export class AuthService {
   constructor(
@@ -54,8 +54,12 @@ export class AuthService {
     return this.usersService.createUser(createUserDto);
   }
 
-  async login(user: any) {
-    const payload = { username: user.username, sub: user.id, roles: user.role };
+  async login(user: Omit<User, 'password'>) {
+    const payload: JwtPayload = {
+      sub: user.id.toString(),
+      username: user.username,
+      role: user.role,
+    };
     return {
       access_token: this.jwtService.sign(payload),
     };
