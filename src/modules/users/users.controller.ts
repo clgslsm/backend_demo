@@ -15,7 +15,7 @@ import {
 import { UsersService } from './users.service';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../auth/roles.decorator';
-import { Role } from '../shared/roles.enum';
+import { Action, Role } from '../../shared/roles.enum';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import {
   ApiBearerAuth,
@@ -30,31 +30,29 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Express } from 'express';
 import { BadRequestException } from '@nestjs/common';
-
+import { CaslGuard } from 'src/utils/casl/casl-guard';
+import { CheckPolicies } from 'src/utils/casl/policies.decorator';
+import { AppAbility, Article } from 'src/utils/casl/casl-ability.factory';
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN)
+  @UseGuards(JwtAuthGuard, CaslGuard)
   @Post()
   createUser(@Body() createUserDto: CreateUserDto) {
-    // const { username, password, role } = createUserDto;
     return this.usersService.createUser(createUserDto);
   }
 
   // Get details of user when admin or user himself
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.USER)
-  @ApiBearerAuth()
   @Get('details/:id')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
   getUserDetails(@Param('id') id: number, @Request() req) {
     return this.usersService.getUserDetails(id, req.user);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.USER)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Put('details/:id')
   updateUserDetails(
@@ -113,8 +111,7 @@ export class UsersController {
     return this.usersService.updateUserAvatar(id, file, req.user);
   }
 
-  @UseGuards(JwtAuthGuard, RolesGuard)
-  @Roles(Role.ADMIN, Role.USER)
+  @UseGuards(JwtAuthGuard)
   @ApiBearerAuth()
   @Delete(':id')
   deleteUser(@Param('id') id: number, @Request() req) {
@@ -125,5 +122,14 @@ export class UsersController {
   @Get('test-s3')
   testS3Connection() {
     return this.usersService.testS3Connection();
+  }
+
+  // Test the casl of article
+  @UseGuards(JwtAuthGuard, CaslGuard)
+  @CheckPolicies((ability: AppAbility) => ability.can(Action.Read, Article))
+  @ApiBearerAuth()
+  @Get('test-casl')
+  testCasl() {
+    return this.usersService.testCasl();
   }
 }

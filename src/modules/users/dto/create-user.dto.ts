@@ -6,7 +6,7 @@ import {
   IsInt,
   Min,
 } from 'class-validator';
-import { Role } from '../../shared/roles.enum';
+import { Role } from '../../../shared/roles.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {

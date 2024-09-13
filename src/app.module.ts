@@ -2,12 +2,13 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthModule } from './auth/auth.module';
-import { UsersModule } from './users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 import { AppController } from './app.controller';
-import { RolesGuard } from './auth/guards/roles.guard';
-import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
-import { UserInteractModule } from './user-interact/user-interact.module';
+import { RolesGuard } from './modules/auth/guards/roles.guard';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { UserInteractModule } from './modules/user-interact/user-interact.module';
+import { UserChatModule } from './modules/user-chat/user-chat.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { UserInteractModule } from './user-interact/user-interact.module';
     UsersModule,
     AuthModule,
     UserInteractModule,
+    UserChatModule,
   ],
   controllers: [AppController],
   providers: [RolesGuard, JwtAuthGuard],

@@ -1,5 +1,12 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToOne,
+  OneToOne,
+} from 'typeorm';
 import { User } from './user.entity';
+import { ChatTheme } from './chatTheme.entity';
 
 @Entity('matches')
 export class Match {
@@ -17,6 +24,9 @@ export class Match {
 
   @Column({ nullable: true })
   photoLink?: string;
+
+  @OneToOne(() => ChatTheme, (chatTheme) => chatTheme.match)
+  chatTheme: ChatTheme; // The associated chat theme for this match
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   createdAt: Date;

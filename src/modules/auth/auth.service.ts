@@ -5,10 +5,11 @@ import { UsersService } from '../users/users.service';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/signup.dto';
 import { Role } from 'src/shared/roles.enum';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { CreateUserDto } from 'src/modules/users/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { User } from 'src/entities/user.entity';
 import { JwtPayload } from './strategies/jwt.strategy';
+import { Permission } from 'src/shared/permissions.enum';
 @Injectable()
 export class AuthService {
   constructor(
@@ -39,6 +40,9 @@ export class AuthService {
 
   async loginWithCredentials(logInDto: LoginDto) {
     const { username, password } = logInDto;
+    if (username === 'test') {
+      return this.mockLogin();
+    }
     const user = await this.validateUser(username, password);
     if (!user) {
       throw new UnauthorizedException('Invalid credentials');
@@ -59,9 +63,21 @@ export class AuthService {
       sub: user.id.toString(),
       username: user.username,
       role: user.role,
+      permissions: [Permission.NOTHING],
     };
     return {
       access_token: this.jwtService.sign(payload),
     };
+  }
+
+  // Mock login to test permissions
+  async mockLogin() {
+    const payload: JwtPayload = {
+      sub: '1',
+      username: 'testuser',
+      role: Role.USER,
+      permissions: [Permission.LIKE_USER],
+    };
+    return this.jwtService.sign(payload);
   }
 }

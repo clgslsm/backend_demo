@@ -42,4 +42,5 @@ export class User {
 
   @DeleteDateColumn()
   deletedAt?: Date;
+  private _id: any;
 }
